@@ -3,10 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Load Model</title>
+    <title>SociaLens</title>
+    <link href="/static/css/reset.css" rel="stylesheet">
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <link href="/static/css/style.css" rel="stylesheet">
+    <script src="/static/js/bootstrap.js" defer></script>
+    <script src="/static/js/script.js" defer></script>
 </head>
 <body>
-    <h1>Load Model</h1>
+  <div class="container my-3 d-flex flex-column justify-content-center align-items-center" style="min-height: 100vh;">
+    <h1 class="text-center mb-4">SociaLens</h1>
+    <div id="status" class="text-center mb-3">Click 'Enter' to load.</div>
     <form action="/run_model" method="get">
         <button type="submit">Load Model</button>
     </form>

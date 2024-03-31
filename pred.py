@@ -1,59 +1,79 @@
 import cv2
+from cv2 import CascadeClassifier, VideoCapture
 import numpy as np
 from deepface import DeepFace
 
-# Load the model
-model = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_alt.xml")
-
-# frame counter; every 5 frames, makes prediction update
-frame_count = 0
-
-# init pred strings and rating
-age_text = ""
-gender_text = ""
-race_text = ""
-emotion_text = ""
-
 # Initialize the video capture object after confirmation
-cap = cv2.VideoCapture(0)
+def init_camera() -> VideoCapture:
+    cap = cv2.VideoCapture(0)
+    return cap
 
 def weigh_age(age) -> int:
-    weighed = 0
-
+    weighed = age // 100
     return weighed
 
 def weigh_gender(gender) -> int:
+    # gender labels: ['man', 'woman']
     weighed = 0
+    if gender == 'man':
+        weighed = 1
 
     return weighed
 
 def weigh_race(race) -> int:
+    # race labels: ['asian', 'indian', 'black', 'white', 'middle eastern', 'latino hispanic']
     weighed = 0
+    if race == 'white':
+        weighed = 3
+    elif race == 'asian':
+        weighed = 2
+    elif race == 'indian' or race == 'middle eastern':
+        weighed = 1
 
     return weighed
 
 def weigh_emotion(emotion) -> int:
+    # emotion labels = ['angry', 'disgust', 'fear', 'happy', 'sad', 'surprise', 'neutral']
     weighed = 0
+    if emotion == 'happy':
+        weighed = 2
+    elif emotion == 'neutral' or emotion == 'surprise':
+        weighed = 1
 
     return weighed
 
 # estimate rating /100 of detected face based on weighted factors
+# returns percentage int rounded to two decimals
 def estimate_rating(age, race, gender, emotion) -> int:
-    # weigh highest to lowest: emotion, race, gender, age
-    # age: int
-    # race labels: ['asian', 'indian', 'black', 'white', 'middle eastern', 'latino_hispanic']
-    # gender labels: ['man', 'woman']
-    # emotion labels = ['angry', 'disgust', 'fear', 'happy', 'sad', 'surprise', 'neutral']
-    age_rating = 0
-    race_rating = 0
-    gender_rating = 0
-    emotion_rating = 0
+    age_rating = weigh_age(age) * 1
+    race_rating = weigh_race(race) * 3
+    gender_rating = weigh_gender(gender) * 3
+    emotion_rating = weigh_emotion(emotion) * 2
 
+    # highest rating possible: 1+9+3+4=17
+    # scaled by 1.5 to average out rating
     total_rating = age_rating + race_rating + gender_rating + emotion_rating
+    total_rating = round(total_rating / 17 * 1.5 * 100, 2)
 
     return total_rating
 
-def main():
+def load_model() -> CascadeClassifier:
+    return cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_alt.xml")
+
+def main(model, cap):
+    # init variables
+    frame_count = 0
+
+    age_text_display = ""
+    age_val = 0
+    gender_text_display = ""
+    gender_val = ""
+    race_text_display = ""
+    race_val = ""
+    emotion_text_display = ""
+    emotion_val = ""
+    rating_text = ""
+
     while True:
         ret, frame = cap.read()
         frame = cv2.flip(frame, 1)
@@ -61,41 +81,44 @@ def main():
         faces = model.detectMultiScale(frame, scaleFactor=1.1, minNeighbors=3)
 
         for (x, y, w, h) in faces:
-
-            print(frame_count)
-
             # find face in frame
             face = frame[y:y+h, x:x+w]
 
             # predictions
             if frame_count % 10 == 0:
                 emotions = DeepFace.analyze(face, actions=['emotion'],enforce_detection=False)
-                emotion_text = "Emotion: " + emotions[0]['dominant_emotion']
+                emotion_text_display = "Emotion: " + emotions[0]['dominant_emotion']
+                emotion_val = emotions[0]['dominant_emotion']
 
             if frame_count % 30 == 0:
                 genders = DeepFace.analyze(face, actions=['gender'], enforce_detection=False)
-                gender_text = "Gender: " + genders[0]['dominant_gender']
+                gender_text_display = "Gender: " + genders[0]['dominant_gender']
+                gender_val = genders[0]['dominant_gender']
 
             if frame_count % 60 == 0:
                 races = DeepFace.analyze(face, actions=['race'],enforce_detection=False)
-                race_text = "Race: " + races[0]['dominant_race']
+                race_text_display = "Race: " + races[0]['dominant_race']
+                race_val = races[0]['dominant_race']
 
             if frame_count % 25 == 0:
                 ages = DeepFace.analyze(face, actions=['age'],enforce_detection=False)
-                age_text = "Age: " + str(ages[0]['age'])
+                age_text_display = "Age: " + str(ages[0]['age'])
+                age_val = ages[0]['age']
 
             # rm later; rating = estimate_rating(age_text, race_text, gender_text, emotion_text)
-            print(age_text)
-            print(gender_text)
-            print(race_text)
-            print(emotion_text)
+            print(age_val)
+            print(gender_val)
+            print(race_val)
+            print(emotion_val)
+            print(estimate_rating(age_val, race_val, gender_val, emotion_val))
 
-            # put rectangle and emotion text above head
-            # move text to side of face later + change colours
-            cv2.putText(frame, emotion_text, (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 2)
-            cv2.putText(frame, gender_text, (x, y-25), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 2)
-            cv2.putText(frame, age_text, (x, y-40), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 2)
-            cv2.putText(frame, race_text, (x, y-55), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 2)
+            rating_text = "Rating: " + str(estimate_rating(age_val, race_val, gender_val, emotion_val))
+
+            cv2.putText(frame, emotion_text_display, (x+w+10, y+15), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 2)
+            cv2.putText(frame, gender_text_display, (x+w+10, y+30), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 2)
+            cv2.putText(frame, age_text_display, (x+w+10, y+45), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 2)
+            cv2.putText(frame, race_text_display, (x+w+10, y+60), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 2)
+            cv2.putText(frame, rating_text, (x+w+10, y+75), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 2)
             cv2.rectangle(frame, (x,y), (x+w,y+h), (0,255,0), 3)
 
             frame_count += 1
@@ -112,4 +135,6 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    model = load_model()
+    cap = init_camera()
+    main(model, cap)

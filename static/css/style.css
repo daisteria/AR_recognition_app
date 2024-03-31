@@ -1,0 +1,91 @@
+body {
+    text-align: center;
+    padding: 20px;
+    background-color: #282c34; 
+    color: #ffffff;
+    font-family: 'Arial', sans-serif;
+}
+
+h1 {
+    font-size: 2em; 
+    color: #FFF; 
+    margin-bottom: 0.5em;
+    font-weight: bold; 
+    text-transform: uppercase; 
+    letter-spacing: 3px; 
+}
+
+.container {
+    min-height: 100vh;
+}
+
+#videoElement, #overlayCanvas {
+    display: none;
+}
+
+.img-fluid {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Buttons */
+button, .btn-close {
+    padding: 12px 24px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 25px; /* Rounded buttons */
+    transition: all 0.3s ease;
+}
+
+/* Modal */
+.modal-content {
+    background-color: #fefefe;
+    color: #000;
+    margin: 4% auto;
+    padding: 20px;
+    border-radius: 15px;
+    width: 80%;
+    max-width: 400px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+}
+
+/* Modal buttons */
+.btn-close {
+    padding: 0;
+    background-color: transparent;
+    border: 0;
+}
+
+/* Change background to red when pressed */
+.btn-close:focus, .btn-close:active {
+    background-color: #ff0000; 
+    border-radius: 50%; 
+}
+
+/* Bold button when hovering */
+.btn-close-custom:focus i, 
+.btn-close-custom:active i {
+    font-weight: 900; 
+}
+
+#startButton {
+    display: block; 
+}
+
+#stopButton {
+    display: none; 
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 1.75em;
+    }
+}
+
+@media (max-width: 480px) {
+    h1 {
+        font-size: 1.5em;
+    }
+}
+
