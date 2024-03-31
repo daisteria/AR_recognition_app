@@ -15,7 +15,7 @@ def run_camera():
     result = init_camera()
     return f'Result: {result}'
 
-@app.route('/run_model')
+@app.route('/run_model', methods=['GET', 'POST'])
 def run_model():
     # Run the Python code to load the model
     subprocess.run(["python", "pred.py"])
