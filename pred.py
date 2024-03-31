@@ -14,8 +14,44 @@ gender_text = ""
 race_text = ""
 emotion_text = ""
 
-# Initialize the video capture object
+# Initialize the video capture object after confirmation
 cap = cv2.VideoCapture(0)
+
+def weigh_age(age) -> int:
+    weighed = 0
+
+    return weighed
+
+def weigh_gender(gender) -> int:
+    weighed = 0
+
+    return weighed
+
+def weigh_race(race) -> int:
+    weighed = 0
+
+    return weighed
+
+def weigh_emotion(emotion) -> int:
+    weighed = 0
+
+    return weighed
+
+# estimate rating /100 of detected face based on weighted factors
+def estimate_rating(age, race, gender, emotion) -> int:
+    # weigh highest to lowest: emotion, race, gender, age
+    # age: int
+    # race labels: ['asian', 'indian', 'black', 'white', 'middle eastern', 'latino_hispanic']
+    # gender labels: ['man', 'woman']
+    # emotion labels = ['angry', 'disgust', 'fear', 'happy', 'sad', 'surprise', 'neutral']
+    age_rating = 0
+    race_rating = 0
+    gender_rating = 0
+    emotion_rating = 0
+
+    total_rating = age_rating + race_rating + gender_rating + emotion_rating
+
+    return total_rating
 
 def main():
     while True:
