@@ -53,7 +53,7 @@ def estimate_rating(age, race, gender, emotion) -> int:
     # highest rating possible: 1+9+3+4=17
     # scaled by 1.5 to average out rating
     total_rating = age_rating + race_rating + gender_rating + emotion_rating
-    total_rating = round(total_rating / 17 * 1.5 * 100, 2)
+    total_rating = round(total_rating / 17 * 1.2 * 100, 2)
 
     return total_rating
 
@@ -85,7 +85,7 @@ def main(model, cap):
             face = frame[y:y+h, x:x+w]
 
             # predictions
-            if frame_count % 10 == 0:
+            if frame_count % 15 == 0:
                 emotions = DeepFace.analyze(face, actions=['emotion'],enforce_detection=False)
                 emotion_text_display = "Emotion: " + emotions[0]['dominant_emotion']
                 emotion_val = emotions[0]['dominant_emotion']
@@ -115,10 +115,10 @@ def main(model, cap):
             rating_text = "Rating: " + str(estimate_rating(age_val, race_val, gender_val, emotion_val))
 
             cv2.putText(frame, emotion_text_display, (x+w+10, y+15), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 2)
-            cv2.putText(frame, gender_text_display, (x+w+10, y+30), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 2)
-            cv2.putText(frame, age_text_display, (x+w+10, y+45), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 2)
-            cv2.putText(frame, race_text_display, (x+w+10, y+60), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 2)
-            cv2.putText(frame, rating_text, (x+w+10, y+75), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 2)
+            cv2.putText(frame, gender_text_display, (x+w+10, y+35), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 2)
+            cv2.putText(frame, age_text_display, (x+w+10, y+55), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 2)
+            cv2.putText(frame, race_text_display, (x+w+10, y+75), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 2)
+            cv2.putText(frame, rating_text, (x+w+10, y+95), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 2)
             cv2.rectangle(frame, (x,y), (x+w,y+h), (0,255,0), 3)
 
             frame_count += 1

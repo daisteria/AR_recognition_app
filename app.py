@@ -1,17 +1,19 @@
 from flask import Flask, render_template
 import subprocess
 
+from pred import init_camera, load_model, main
+
 app = Flask(__name__)
 
 @app.route('/')
 def index():
     return render_template('index.html')
 
-# @app.route('/run_function')
-# def run_function():
-#     # Call the specific function from your_script.py
-#     result = your_function_name()
-#     return f'Result: {result}'
+@app.route('/init_camera')
+def run_camera():
+    # Call the specific function from pred.py
+    result = init_camera()
+    return f'Result: {result}'
 
 @app.route('/run_model')
 def run_model():
