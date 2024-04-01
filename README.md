@@ -5,4 +5,11 @@ For educational purposes only. Rating based on appearance reflects ethical conce
 
 # Live demo (browser)
 
-To try a live demo, go to https://daisteria.github.io/AR_recognition_app/templates/index.html
+To try a live demo, run the following in the terminal:
+
+```
+pip install -r requirements.txt
+python webserver_app.py
+```
+
+This will automatically open a browser tab with a live camera feed and detection. 
