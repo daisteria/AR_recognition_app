@@ -9,7 +9,7 @@ To try a live demo, run the following in the terminal:
 
 ```
 pip install -r requirements.txt
-python webserver_app.py
+waitress-serve --listen:127.0.0.1:8000 'webserver_app:app'
 ```
 
-This will automatically open a browser tab with a live camera feed and detection. 
+Then, navigate to <https://127.0.0.1:8000/> to see the live camera feed and detection. 
