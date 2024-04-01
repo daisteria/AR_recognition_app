@@ -3,10 +3,21 @@ from cv2 import CascadeClassifier, VideoCapture
 import numpy as np
 from deepface import DeepFace
 
-# Initialize the video capture object after confirmation
-def init_camera() -> VideoCapture:
-    cap = cv2.VideoCapture(0)
-    return cap
+def predict_age(face) -> int:
+    ages = DeepFace.analyze(face, actions=['age'],enforce_detection=False)
+    return ages[0]['age']
+
+def predict_gender(face) -> str:
+    genders = DeepFace.analyze(face, actions=['gender'], enforce_detection=False)
+    return genders[0]['dominant_gender']
+
+def predict_race(face) -> str:
+    races = DeepFace.analyze(face, actions=['race'],enforce_detection=False)
+    return races[0]['dominant_race']
+
+def predict_emotion(face) -> str:
+    emotions = DeepFace.analyze(face, actions=['emotion'],enforce_detection=False)
+    return emotions[0]['dominant_emotion']
 
 def weigh_age(age) -> int:
     weighed = age // 100
@@ -57,8 +68,75 @@ def estimate_rating(age, race, gender, emotion) -> int:
 
     return total_rating
 
+# load model
 def load_model() -> CascadeClassifier:
     return cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_alt.xml")
+
+# Initialize the video capture object after confirmation
+def init_camera() -> VideoCapture:
+    cap = cv2.VideoCapture(0)
+    return cap
+
+# process single frame for client side
+def process_frame(model, frame, frame_count, age_val, gender_val, race_val, emotion_val):
+    print(frame_count) # rm later
+    faces = model.detectMultiScale(frame, scaleFactor=1.1, minNeighbors=3)
+
+    age_text_display = "Age: " + str(age_val)
+    gender_text_display = "Gender: " + gender_val
+    race_text_display = "Race: " + race_val
+    emotion_text_display = "Emotion: " + emotion_val
+    rating_text = ""
+
+    for (x, y, w, h) in faces:
+        # find face in frame
+        face = frame[y:y+h, x:x+w]
+
+        # predictions
+        if frame_count % 16 == 0 or emotion_val == "":
+            print("--- FREEZE ON EMOTION DETECTION ---") # rm later
+            emotion_val = predict_emotion(face)
+            emotion_text_display = "Emotion: " + emotion_val
+
+        if frame_count % 31 == 0 or gender_val == "":
+            print("--- FREEZE ON GENDER DETECTION ---") # rm later
+            gender_val = predict_gender(face)
+            gender_text_display = "Gender: " + gender_val
+
+        if frame_count % 59 == 0 or race_val == "":
+            print("--- FREEZE ON RACE DETECTION ---") # rm later
+            race_val = predict_race(face)
+            race_text_display = "Race: " + race_val
+
+        if frame_count % 43 == 0 or age_val == 0:
+            print("--- FREEZE ON AGE DETECTION ---") # rm later
+            age_val = predict_age(face)
+            age_text_display = "Age: " + str(age_val)
+
+        # rm later; rating = estimate_rating(age_text, race_text, gender_text, emotion_text)
+        print(age_val)
+        print(gender_val)
+        print(race_val)
+        print(emotion_val)
+        print(estimate_rating(age_val, race_val, gender_val, emotion_val))
+
+        rating_text = "Rating: " + str(estimate_rating(age_val, race_val, gender_val, emotion_val))
+
+        # set semi transparent black background to the side of face
+        alpha = 0.4  # Opacity of the rectangle (0.0 - 1.0)
+        overlay = frame.copy()
+        cv2.rectangle(overlay, (x+w+5,y+10), (x+w+200, y+135), (0, 0, 0), -1)
+        cv2.rectangle(overlay, (x,y), (x+w,y+h), (255,255,255), 1)
+        cv2.addWeighted(overlay, alpha, frame, 1 - alpha, 0, frame)
+
+        # set predictions to frame
+        cv2.putText(frame, emotion_text_display, (x+w+15, y+35), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255,255,255), 2)
+        cv2.putText(frame, gender_text_display, (x+w+15, y+55), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255,255,255), 2)
+        cv2.putText(frame, age_text_display, (x+w+15, y+75), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255,255,255), 2)
+        cv2.putText(frame, race_text_display, (x+w+15, y+95), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255,255,255), 2)
+        cv2.putText(frame, rating_text, (x+w+15, y+115), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255,255,255), 2)
+
+    return frame, age_val, gender_val, race_val, emotion_val
 
 def main(model, cap):
     # init variables
