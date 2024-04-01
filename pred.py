@@ -85,22 +85,26 @@ def main(model, cap):
             face = frame[y:y+h, x:x+w]
 
             # predictions
-            if frame_count % 15 == 0:
+            if frame_count % 16 == 0:
+                print("--- FREEZE ON EMOTION DETECTION ---") # rm later
                 emotions = DeepFace.analyze(face, actions=['emotion'],enforce_detection=False)
                 emotion_text_display = "Emotion: " + emotions[0]['dominant_emotion']
                 emotion_val = emotions[0]['dominant_emotion']
 
-            if frame_count % 30 == 0:
+            if frame_count % 31 == 0:
+                print("--- FREEZE ON GENDER DETECTION ---") # rm later
                 genders = DeepFace.analyze(face, actions=['gender'], enforce_detection=False)
                 gender_text_display = "Gender: " + genders[0]['dominant_gender']
                 gender_val = genders[0]['dominant_gender']
 
-            if frame_count % 60 == 0:
+            if frame_count % 59 == 0:
+                print("--- FREEZE ON RACE DETECTION ---") # rm later
                 races = DeepFace.analyze(face, actions=['race'],enforce_detection=False)
                 race_text_display = "Race: " + races[0]['dominant_race']
                 race_val = races[0]['dominant_race']
 
-            if frame_count % 25 == 0:
+            if frame_count % 43 == 0:
+                print("--- FREEZE ON AGE DETECTION ---") # rm later
                 ages = DeepFace.analyze(face, actions=['age'],enforce_detection=False)
                 age_text_display = "Age: " + str(ages[0]['age'])
                 age_val = ages[0]['age']
@@ -114,12 +118,19 @@ def main(model, cap):
 
             rating_text = "Rating: " + str(estimate_rating(age_val, race_val, gender_val, emotion_val))
 
-            cv2.putText(frame, emotion_text_display, (x+w+10, y+15), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 2)
-            cv2.putText(frame, gender_text_display, (x+w+10, y+35), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 2)
-            cv2.putText(frame, age_text_display, (x+w+10, y+55), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 2)
-            cv2.putText(frame, race_text_display, (x+w+10, y+75), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 2)
-            cv2.putText(frame, rating_text, (x+w+10, y+95), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 2)
-            cv2.rectangle(frame, (x,y), (x+w,y+h), (0,255,0), 3)
+            # set semi transparent black background to the side of face
+            alpha = 0.4  # Opacity of the rectangle (0.0 - 1.0)
+            overlay = frame.copy()
+            cv2.rectangle(overlay, (x+w+5,y+10), (x+w+200, y+135), (0, 0, 0), -1)
+            cv2.rectangle(overlay, (x,y), (x+w,y+h), (255,255,255), 1)
+            cv2.addWeighted(overlay, alpha, frame, 1 - alpha, 0, frame)
+
+            # set predictions to frame
+            cv2.putText(frame, emotion_text_display, (x+w+15, y+35), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255,255,255), 2)
+            cv2.putText(frame, gender_text_display, (x+w+15, y+55), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255,255,255), 2)
+            cv2.putText(frame, age_text_display, (x+w+15, y+75), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255,255,255), 2)
+            cv2.putText(frame, race_text_display, (x+w+15, y+95), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255,255,255), 2)
+            cv2.putText(frame, rating_text, (x+w+15, y+115), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255,255,255), 2)
 
             frame_count += 1
 
