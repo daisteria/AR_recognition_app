@@ -74,7 +74,10 @@ def load_model() -> CascadeClassifier:
 
 # Initialize the video capture object after confirmation
 def init_camera() -> VideoCapture:
-    cap = cv2.VideoCapture(0)
+    cap=cv2.VideoCapture(0,cv2.CAP_DSHOW) #// if you have second camera you can set first parameter as 1
+    if not (cap.isOpened()):
+        print("Could not open video device")
+        return None
     return cap
 
 # process single frame for client side
