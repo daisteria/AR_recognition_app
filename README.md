@@ -14,8 +14,10 @@ To try a live demo, run the following in a powershell terminal of the root direc
 
 ```
 pip install -r requirements.txt
-waitress-serve --listen:127.0.0.1:8000 'webserver_app:app'
 ```
+
+For Windows users, use ```waitress-serve --listen:127.0.0.1:8000 'webserver_app:app'``` after installing the dependencies in requirements.txt.
+For Mac/Linux users, use the equivalent ```gunicorn -b 127.0.0.1:8000 webserver_app:app``` command.
 
 Then, navigate to <https://127.0.0.1:8000/> to see the live camera feed and detection. 
 
@@ -26,6 +28,8 @@ This live demo will open a new window frame. In the terminal,
 pip install -r requirements.txt
 python app.py
 ```
+
+To quit, press q while the new window camera frame is active, and then press CTRL-C in the terminal to kill the process.
 
 ## Non-technical Users
 This is a walkthough for non-technical users to try a live demo.
