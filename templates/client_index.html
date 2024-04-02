@@ -1,30 +1,82 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <title>Video Streaming </title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SociaLens</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="icon" type="image/gif" href="{{ url_for('static', filename='images/spin.gif') }}">
+
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #282c34;
+        }
+
+        body {
+        text-align: center;
+        padding: 20px;
+        color: #ffffff;
+        font-family: 'Arial', sans-serif;
+        }   
+
+        h1 {
+            font-size: 2em; 
+            color: #FFF; 
+            margin-bottom: 0.5em;
+            font-weight: bold; 
+            text-transform: uppercase; 
+            letter-spacing: 3px; 
+        }
+        .container {
+            text-align: center;
+        }
+
+        #canvas {
+            max-width: 100%;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            /* width: 1280px; */
+        }
+
+        image {
+            max-width: 100%;
+            height: auto;
+        }
+
+        #status {
+            font-size: 2em;
+        }
+    </style>
 </head>
 <body>
-    <div>
-        <h1>Canvas</h1>
-        <canvas id="canvas" width="640px" height="480px"></canvas>
+    <div class="container my-3 d-flex flex-column justify-content-center align-items-center mt-4">
+        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="SociaLens Logo" class="mb-4">
+        <div id="status" class="text-center mb-3">Real-time feature prediction and rating.</div>
+        <div class="d-flex flex-column justify-content-center align-items-center mb-3">
+            <canvas id="canvas" width="640px" height="480px" class="img-fluid mb-2"></canvas>
+        </div>
     </div>
 
-<script >
-    var ctx = document.getElementById("canvas").getContext('2d');
-    var img = new Image();
-    img.src = "{{ url_for('video_feed') }}";
-
-    // need only for static image
-    //img.onload = function(){   
-    //    ctx.drawImage(img, 0, 0);
-    //};
-
-    // need only for animated image
-    function refreshCanvas(){
-        ctx.drawImage(img, 0, 0);
-    };
-    window.setInterval("refreshCanvas()", 50);
-
-</script>
-
+        <script>
+            var ctx = document.getElementById("canvas").getContext('2d');
+            var img = new Image();
+            img.src = "{{ url_for('video_feed') }}";
+        
+            // need only for static image
+            //img.onload = function(){   
+            //    ctx.drawImage(img, 0, 0);
+            //};
+        
+            // need only for animated image
+            function refreshCanvas(){
+                ctx.drawImage(img, 0, 0);
+            };
+            window.setInterval("refreshCanvas()", 50);
+        </script>
 </body>
 </html>
